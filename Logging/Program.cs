@@ -25,6 +25,7 @@ namespace Lesson
                 (new TotalLogWritter
                 (new ConsoleLogWritter(), new DateLogWritter
                 (new FileLogWritter(), DayOfWeek.Friday)));
+                
         }
     }
 
@@ -79,19 +80,15 @@ namespace Lesson
 
     class TotalLogWritter : ILogger
     {
-        private readonly ILogger _consoleLogger;
-        private readonly ILogger _fridayFileLogger;
+        private readonly ILogger[] _loggers;
 
-        public TotalLogWritter(ILogger consoleLogger, ILogger fridayFileLogger)
-        {
-            _consoleLogger = consoleLogger ?? throw new ArgumentNullException(nameof(consoleLogger));
-            _fridayFileLogger = fridayFileLogger ?? throw new ArgumentNullException(nameof(fridayFileLogger));
-        }
+        public TotalLogWritter(params ILogger[] loggers) => 
+            _loggers = loggers ?? throw new ArgumentNullException(nameof(loggers));
 
         public void WriteError(string message)
         {
-            _consoleLogger.WriteError(message);
-            _fridayFileLogger.WriteError(message);
+            foreach (ILogger logger in _loggers)
+                logger.WriteError(message);
         }
     }
 }
